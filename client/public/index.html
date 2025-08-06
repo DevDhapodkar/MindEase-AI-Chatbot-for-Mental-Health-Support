@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#4A90A4" />
+    <meta
+      name="description"
+      content="MindEase - AI-powered chatbot for mental health support. Get empathetic conversations, emotion detection, and personalized wellness resources."
+    />
+    <meta name="keywords" content="mental health, chatbot, AI, wellness, anxiety, depression, support" />
+    <meta name="author" content="MindEase Team" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="MindEase - AI Mental Health Support" />
+    <meta property="og:description" content="Your AI companion for mental wellness. Get empathetic support and personalized resources." />
+    <meta property="og:url" content="%PUBLIC_URL%" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="MindEase - AI Mental Health Support" />
+    <meta property="twitter:description" content="Your AI companion for mental wellness. Get empathetic support and personalized resources." />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <title>MindEase - AI Mental Health Support</title>
+    
+    <!-- Accessibility and Security -->
+    <style>
+      /* Loading screen */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #F8FFFE 0%, #E8F6F3 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-family: 'Inter', sans-serif;
+      }
+      
+      .loading-logo {
+        width: 64px;
+        height: 64px;
+        background: #4A90A4;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        animation: pulse 2s infinite;
+      }
+      
+      .loading-text {
+        color: #2C3E50;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      
+      .loading-subtitle {
+        color: #5D6D7E;
+        font-size: 14px;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      
+      /* Hide loading screen when React loads */
+      .app-loaded .loading-screen {
+        display: none;
+      }
+      
+      /* Focus management for accessibility */
+      body:focus-within {
+        scroll-behavior: smooth;
+      }
+      
+      /* High contrast mode support */
+      @media (prefers-contrast: high) {
+        .loading-screen {
+          background: white;
+          color: black;
+        }
+        .loading-logo {
+          background: black;
+          border: 2px solid black;
+        }
+      }
+      
+      /* Reduced motion for accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        .loading-logo {
+          animation: none;
+        }
+        body:focus-within {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>
+      <div style="padding: 20px; text-align: center; font-family: Arial, sans-serif;">
+        <h1>JavaScript Required</h1>
+        <p>MindEase requires JavaScript to function. Please enable JavaScript in your browser.</p>
+        <p>If you need immediate mental health support:</p>
+        <ul style="list-style: none; padding: 0;">
+          <li><strong>US:</strong> 988 (Suicide & Crisis Lifeline)</li>
+          <li><strong>UK:</strong> 116 123 (Samaritans)</li>
+          <li><strong>Emergency:</strong> 911, 999, or your local emergency number</li>
+        </ul>
+      </div>
+    </noscript>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+      <div class="loading-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+      </div>
+      <div class="loading-text">Loading MindEase...</div>
+      <div class="loading-subtitle">Your AI companion for mental wellness</div>
+    </div>
+    
+    <!-- React App Container -->
+    <div id="root"></div>
+    
+    <!-- Hide loading screen when React loads -->
+    <script>
+      window.addEventListener('load', function() {
+        // Small delay to ensure React has rendered
+        setTimeout(function() {
+          document.body.classList.add('app-loaded');
+        }, 500);
+      });
+      
+      // Accessibility: Skip to main content
+      document.addEventListener('DOMContentLoaded', function() {
+        const skipLink = document.createElement('a');
+        skipLink.href = '#root';
+        skipLink.textContent = 'Skip to main content';
+        skipLink.style.cssText = `
+          position: absolute;
+          top: -40px;
+          left: 6px;
+          background: #4A90A4;
+          color: white;
+          padding: 8px;
+          border-radius: 4px;
+          text-decoration: none;
+          z-index: 10000;
+          transition: top 0.3s;
+        `;
+        skipLink.addEventListener('focus', function() {
+          this.style.top = '6px';
+        });
+        skipLink.addEventListener('blur', function() {
+          this.style.top = '-40px';
+        });
+        document.body.insertBefore(skipLink, document.body.firstChild);
+      });
+    </script>
+  </body>
+</html>
