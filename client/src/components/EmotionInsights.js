@@ -1,230 +1,199 @@
 import React from 'react';
 import {
-  Paper,
-  Typography,
   Box,
-  Chip,
-  LinearProgress,
-  Alert,
-  Collapse,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon
-} from '@mui/material';
-import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  TrendingFlat as TrendingFlatIcon,
-  Psychology as PsychologyIcon,
-  Warning as WarningIcon,
-  Info as InfoIcon
-} from '@mui/icons-material';
+  VStack,
+  HStack,
+  Text,
+  Card,
+  CardHeader,
+  CardBody,
+  Heading,
+  Progress,
+} from '@chakra-ui/react';
 
 const EmotionInsights = ({ insights, recommendations }) => {
   if (!insights) return null;
 
-  const getConcernLevelColor = (level) => {
+  const getConcernLevelData = (level) => {
     switch (level) {
-      case 'crisis': return 'error';
-      case 'high': return 'warning';
-      case 'medium': return 'info';
-      case 'low': return 'success';
-      default: return 'default';
+      case 'crisis':
+        return { 
+          color: 'red', 
+          label: 'Crisis', 
+          progress: 100,
+          description: 'Immediate support needed',
+          emoji: '🚨'
+        };
+      case 'high':
+        return { 
+          color: 'orange', 
+          label: 'High Concern', 
+          progress: 80,
+          description: 'Significant emotional distress',
+          emoji: '⚠️'
+        };
+      case 'medium':
+        return { 
+          color: 'blue', 
+          label: 'Medium Concern', 
+          progress: 60,
+          description: 'Moderate emotional support needed',
+          emoji: '😔'
+        };
+      case 'low':
+        return { 
+          color: 'green', 
+          label: 'Low Concern', 
+          progress: 30,
+          description: 'Mild emotional fluctuation',
+          emoji: '💙'
+        };
+      default:
+        return { 
+          color: 'gray', 
+          label: 'Stable', 
+          progress: 10,
+          description: 'Emotional well-being appears stable',
+          emoji: '☀️'
+        };
     }
   };
 
-  const getConcernLevelIntensity = (level) => {
-    switch (level) {
-      case 'crisis': return 100;
-      case 'high': return 75;
-      case 'medium': return 50;
-      case 'low': return 25;
-      default: return 0;
-    }
-  };
-
-  const getSentimentIcon = (sentiment) => {
-    switch (sentiment) {
-      case 'positive': return <TrendingUpIcon color="success" />;
-      case 'negative': return <TrendingDownIcon color="error" />;
-      default: return <TrendingFlatIcon color="info" />;
-    }
-  };
-
-  const getSentimentColor = (sentiment) => {
-    switch (sentiment) {
-      case 'positive': return 'success.light';
-      case 'negative': return 'error.light';
-      default: return 'info.light';
-    }
-  };
+  const concernData = getConcernLevelData(insights.concernLevel);
 
   return (
-    <Paper sx={{ p: 2, height: 'fit-content', maxHeight: '100%', overflow: 'auto' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-        <PsychologyIcon color="primary" />
-        <Typography variant="h6" fontWeight="bold">
-          Emotion Insights
-        </Typography>
-      </Box>
+    <Card bg="white" boxShadow="xl" borderRadius="xl" border="1px solid" borderColor="gray.100">
+      <CardHeader pb={2}>
+        <HStack spacing={3}>
+          <Text fontSize="lg">🧠</Text>
+          <Heading size="sm" color="gray.700">
+            Emotional Insights
+          </Heading>
+        </HStack>
+      </CardHeader>
 
-      {/* Crisis Alert */}
-      <Collapse in={insights.concernLevel === 'crisis'}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          <Typography variant="body2" fontWeight="bold">
-            Crisis indicators detected. Please consider reaching out for immediate support.
-          </Typography>
-        </Alert>
-      </Collapse>
-
-      {/* Concern Level */}
-      <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Typography variant="body2" fontWeight="medium">
-            Concern Level
-          </Typography>
-          <Chip
-            size="small"
-            label={insights.concernLevel}
-            color={getConcernLevelColor(insights.concernLevel)}
-            variant="outlined"
-          />
-        </Box>
-        <LinearProgress
-          variant="determinate"
-          value={getConcernLevelIntensity(insights.concernLevel)}
-          color={getConcernLevelColor(insights.concernLevel)}
-          sx={{ 
-            height: 8, 
-            borderRadius: 4,
-            bgcolor: 'grey.200'
-          }}
-        />
-      </Box>
-
-      {/* Sentiment Analysis */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
-          Current Sentiment
-        </Typography>
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 1,
-          p: 1.5,
-          bgcolor: getSentimentColor(insights.sentiment),
-          borderRadius: 2
-        }}>
-          {getSentimentIcon(insights.sentiment)}
-          <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
-            {insights.sentiment}
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Detected Concerns */}
-      {insights.detectedConcerns && insights.detectedConcerns.length > 0 && (
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
-            Areas of Focus
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {insights.detectedConcerns.map((concern, index) => (
-              <Chip
-                key={index}
-                size="small"
-                label={`${concern.type}: ${concern.level}`}
-                variant="outlined"
-                color="info"
-                sx={{ fontSize: '0.75rem' }}
-              />
-            ))}
+      <CardBody pt={0}>
+        <VStack spacing={4} align="stretch">
+          {/* Concern Level */}
+          <Box>
+            <HStack justify="space-between" mb={2}>
+              <HStack spacing={2}>
+                <Text fontSize="md">{concernData.emoji}</Text>
+                <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                  {concernData.label}
+                </Text>
+              </HStack>
+            </HStack>
+            
+            <Progress 
+              value={concernData.progress} 
+              colorScheme={concernData.color}
+              size="sm" 
+              borderRadius="full"
+              bg="gray.100"
+              mb={1}
+            />
+            
+            <Text fontSize="xs" color="gray.500">
+              {concernData.description}
+            </Text>
           </Box>
-        </Box>
-      )}
 
-      {/* Immediate Recommendations */}
-      {recommendations && (
-        <Box>
-          <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
-            Suggested Actions
-          </Typography>
-          
-          {/* Immediate Actions */}
-          {recommendations.immediateActions && recommendations.immediateActions.length > 0 && (
-            <Alert severity={insights.concernLevel === 'crisis' ? 'error' : 'warning'} sx={{ mb: 2 }}>
-              <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
-                Immediate Steps:
-              </Typography>
-              <List dense>
-                {recommendations.immediateActions.slice(0, 2).map((action, index) => (
-                  <ListItem key={index} sx={{ py: 0.25, pl: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 20 }}>
-                      <WarningIcon sx={{ fontSize: 16, color: 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary={action} 
-                      primaryTypographyProps={{ variant: 'body2', fontSize: '0.8rem' }}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Alert>
+          {/* Sentiment */}
+          <Box>
+            <HStack justify="space-between" mb={2}>
+              <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                Sentiment
+              </Text>
+              <Text 
+                fontSize="sm"
+                color={
+                  insights.sentiment === 'positive' ? 'green.600' : 
+                  insights.sentiment === 'negative' ? 'red.600' : 'gray.600'
+                }
+                fontWeight="medium"
+              >
+                {insights.sentiment === 'positive' ? '😊 Positive' :
+                 insights.sentiment === 'negative' ? '😔 Negative' : '😐 Neutral'}
+              </Text>
+            </HStack>
+          </Box>
+
+          {/* Emotional Context */}
+          {insights.emotionalContext && (
+            <Box>
+              <Text fontSize="sm" fontWeight="semibold" color="gray.700" mb={3}>
+                Detected Emotions
+              </Text>
+              <VStack spacing={2} align="stretch">
+                {Object.entries(insights.emotionalContext)
+                  .filter(([key, value]) => value === 'detected')
+                  .map(([emotion]) => (
+                    <HStack key={emotion} justify="space-between">
+                      <HStack spacing={2}>
+                        <Text fontSize="sm">
+                          {emotion === 'relationships' ? '💕' :
+                           emotion === 'depression' ? '😔' :
+                           emotion === 'anxiety' ? '😰' :
+                           emotion === 'crisis' ? '🚨' : '🧠'}
+                        </Text>
+                        <Text fontSize="sm" color="gray.600" textTransform="capitalize">
+                          {emotion}
+                        </Text>
+                      </HStack>
+                      <Text fontSize="xs" color="blue.600" fontWeight="medium">
+                        Active
+                      </Text>
+                    </HStack>
+                  ))}
+                
+                {Object.entries(insights.emotionalContext)
+                  .filter(([key, value]) => value === 'detected').length === 0 && (
+                  <HStack spacing={2}>
+                    <Text fontSize="sm">☀️</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      No specific emotional concerns detected
+                    </Text>
+                  </HStack>
+                )}
+              </VStack>
+            </Box>
           )}
 
-          {/* Exercises */}
-          {recommendations.exercises && recommendations.exercises.length > 0 && (
-            <Alert severity="info" sx={{ mb: 2 }}>
-              <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
-                Helpful Exercises:
-              </Typography>
-              <List dense>
-                {recommendations.exercises.slice(0, 3).map((exercise, index) => (
-                  <ListItem key={index} sx={{ py: 0.25, pl: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 20 }}>
-                      <InfoIcon sx={{ fontSize: 16, color: 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary={typeof exercise === 'string' ? exercise : exercise.name}
-                      primaryTypographyProps={{ variant: 'body2', fontSize: '0.8rem' }}
+          {/* Context Information */}
+          {insights.context && (
+            <Box>
+              <Text fontSize="sm" fontWeight="semibold" color="gray.700" mb={2}>
+                Context Analysis
+              </Text>
+              <VStack spacing={1} align="stretch">
+                {insights.context.complexity && (
+                  <HStack justify="space-between">
+                    <Text fontSize="xs" color="gray.500">Complexity:</Text>
+                    <Text fontSize="xs" fontWeight="medium" color="gray.700">
+                      {insights.context.complexity}
+                    </Text>
+                  </HStack>
+                )}
+                
+                {insights.context.emotionalIntensity !== undefined && (
+                  <HStack justify="space-between">
+                    <Text fontSize="xs" color="gray.500">Intensity:</Text>
+                    <Progress 
+                      value={insights.context.emotionalIntensity * 100} 
+                      size="xs" 
+                      colorScheme="blue"
+                      w="60px"
+                      borderRadius="full"
                     />
-                  </ListItem>
-                ))}
-              </List>
-            </Alert>
+                  </HStack>
+                )}
+              </VStack>
+            </Box>
           )}
-
-          {/* Resources */}
-          {recommendations.resources && recommendations.resources.length > 0 && (
-            <Alert severity="success" sx={{ mb: 1 }}>
-              <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
-                Support Resources:
-              </Typography>
-              <List dense>
-                {recommendations.resources.slice(0, 2).map((resource, index) => (
-                  <ListItem key={index} sx={{ py: 0.25, pl: 0 }}>
-                    <ListItemText 
-                      primary={typeof resource === 'string' ? resource : resource.name}
-                      primaryTypographyProps={{ variant: 'body2', fontSize: '0.8rem' }}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Alert>
-          )}
-        </Box>
-      )}
-
-      <Typography variant="caption" color="text.secondary" sx={{ 
-        display: 'block', 
-        mt: 2,
-        fontStyle: 'italic',
-        textAlign: 'center'
-      }}>
-        These insights are based on conversation analysis and are not medical diagnoses.
-      </Typography>
-    </Paper>
+        </VStack>
+      </CardBody>
+    </Card>
   );
 };
 

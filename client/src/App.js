@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container, Paper, Box } from '@mui/material';
+import { ChakraProvider } from '@chakra-ui/react';
+import { Box, Container } from '@chakra-ui/react';
 import ChatInterface from './components/ChatInterface';
 import Header from './components/Header';
 import PrivacyNotice from './components/PrivacyNotice';
@@ -8,73 +8,6 @@ import ResourcePanel from './components/ResourcePanel';
 import EmotionInsights from './components/EmotionInsights';
 import { v4 as uuidv4 } from 'uuid';
 import './App.css';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#4A90A4',
-      light: '#7BB3C1',
-      dark: '#2F5F6F'
-    },
-    secondary: {
-      main: '#8FBC8F',
-      light: '#B5D8B5',
-      dark: '#5A8A5A'
-    },
-    background: {
-      default: '#F8FFFE',
-      paper: '#FFFFFF'
-    },
-    text: {
-      primary: '#2C3E50',
-      secondary: '#5D6D7E'
-    },
-    success: {
-      main: '#27AE60'
-    },
-    warning: {
-      main: '#F39C12'
-    },
-    error: {
-      main: '#E74C3C'
-    }
-  },
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h4: {
-      fontWeight: 600,
-      color: '#2C3E50'
-    },
-    h6: {
-      fontWeight: 500,
-      color: '#34495E'
-    },
-    body1: {
-      lineHeight: 1.6
-    }
-  },
-  shape: {
-    borderRadius: 12
-  },
-  components: {
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
-        }
-      }
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          borderRadius: 25,
-          padding: '10px 24px'
-        }
-      }
-    }
-  }
-});
 
 function App() {
   const [sessionId, setSessionId] = useState(null);
@@ -144,62 +77,67 @@ function App() {
 
   if (showPrivacyNotice) {
     return (
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+      <ChakraProvider>
         <PrivacyNotice onAccept={handlePrivacyAccept} />
-      </ThemeProvider>
+      </ChakraProvider>
     );
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ 
-        minHeight: '100vh', 
-        background: 'linear-gradient(135deg, #F8FFFE 0%, #E8F6F3 100%)',
-        py: 2
-      }}>
-        <Container maxWidth="lg">
+    <ChakraProvider>
+      <Box 
+        minH="100vh" 
+        py={4}
+        bg="linear-gradient(135deg, #F8FFFE 0%, #E8F6F3 100%)"
+      >
+        <Container maxW="7xl">
           <Header onNewSession={handleNewSession} />
           
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: '1fr', lg: '1fr 300px' },
-            gap: 2,
-            mt: 2
-          }}>
+          <Box 
+            display={{ base: 'flex', lg: 'grid' }}
+            flexDirection={{ base: 'column', lg: 'unset' }}
+            gridTemplateColumns={{ lg: '1fr 300px' }}
+            gap={6}
+            mt={6}
+          >
             {/* Main Chat Area */}
-            <Paper sx={{ 
-              height: '70vh', 
-              display: 'flex', 
-              flexDirection: 'column',
-              overflow: 'hidden'
-            }}>
+            <Box
+              bg="white"
+              borderRadius="xl"
+              boxShadow="0 4px 20px rgba(0,0,0,0.08)"
+              border="1px solid"
+              borderColor="gray.100"
+              h={{ base: '70vh', lg: '75vh' }}
+              display="flex"
+              flexDirection="column"
+              overflow="hidden"
+            >
               {sessionId ? (
                 <ChatInterface 
                   sessionId={sessionId}
                   onEmotionUpdate={handleEmotionUpdate}
                 />
               ) : (
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  height: '100%',
-                  color: 'text.secondary'
-                }}>
+                <Box 
+                  display="flex" 
+                  alignItems="center" 
+                  justifyContent="center"
+                  h="100%"
+                  color="gray.500"
+                  fontSize="lg"
+                >
                   Initializing MindEase...
                 </Box>
               )}
-            </Paper>
+            </Box>
 
             {/* Side Panel */}
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: 2,
-              height: '70vh'
-            }}>
+            <Box 
+              display="flex" 
+              flexDirection="column" 
+              gap={4}
+              h={{ base: 'auto', lg: '75vh' }}
+            >
               {/* Emotion Insights */}
               {currentEmotionInsights && (
                 <EmotionInsights 
@@ -218,7 +156,7 @@ function App() {
           </Box>
         </Container>
       </Box>
-    </ThemeProvider>
+    </ChakraProvider>
   );
 }
 

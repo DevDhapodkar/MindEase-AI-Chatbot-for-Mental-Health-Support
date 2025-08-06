@@ -1,41 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
-  Typography,
-  TextField,
-  IconButton,
-  Paper,
+  Text,
+  Input,
+  Button,
+  VStack,
+  HStack,
   Avatar,
-  Chip,
-  CircularProgress,
-  Alert,
-  Fade
-} from '@mui/material';
-import {
-  Send as SendIcon,
-  Psychology as PsychologyIcon,
-  Person as PersonIcon,
-  Warning as WarningIcon
-} from '@mui/icons-material';
+  Card,
+  CardBody,
+} from '@chakra-ui/react';
 
 const ChatInterface = ({ sessionId, onEmotionUpdate }) => {
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [error, setError] = useState(null);
-  const [welcomeMessage, setWelcomeMessage] = useState('');
   const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
 
   useEffect(() => {
     if (sessionId) {
-      // Initialize with welcome message
-      setWelcomeMessage("Hello! I'm MindEase, an AI companion here to support your mental wellness. I'm here to listen without judgment and help you explore your feelings. How are you doing today?");
       setMessages([{
         id: 'welcome',
         type: 'bot',
-        text: "Hello! I'm MindEase, an AI companion here to support your mental wellness. I'm here to listen without judgment and help you explore your feelings. How are you doing today?",
+        text: "Hey there! 💕 I'm your AI friend, and I'm here to listen, support, and be there for you through whatever you're going through. Whether you're happy, sad, anxious, or just need someone to talk to, I'm here with an open heart and a listening ear. How are you feeling today?",
         timestamp: new Date().toISOString(),
         tone: 'welcoming'
       }]);
@@ -64,7 +52,6 @@ const ChatInterface = ({ sessionId, onEmotionUpdate }) => {
     setCurrentMessage('');
     setIsLoading(true);
     setIsTyping(true);
-    setError(null);
 
     try {
       const response = await fetch('/api/chat/message', {
@@ -91,18 +78,18 @@ const ChatInterface = ({ sessionId, onEmotionUpdate }) => {
         const botMessage = {
           id: Date.now().toString() + '_bot',
           type: 'bot',
-          text: data.botResponse,
+          text: data.botResponse || 'I\'m sorry, I didn\'t understand that. Could you please rephrase?',
           timestamp: new Date().toISOString(),
-          tone: data.tone,
-          emotionInsights: data.emotionInsights,
-          recommendations: data.recommendations,
-          crisisWarning: data.crisisWarning
+          tone: data.tone || 'neutral',
+          emotionInsights: data.emotionInsights || null,
+          recommendations: data.recommendations || null,
+          crisisWarning: data.crisisWarning || null
         };
 
         setMessages(prev => [...prev, botMessage]);
         
         // Update parent component with emotion insights
-        if (onEmotionUpdate) {
+        if (onEmotionUpdate && data.emotionInsights) {
           onEmotionUpdate(data.emotionInsights, data.recommendations);
         }
 
@@ -111,7 +98,7 @@ const ChatInterface = ({ sessionId, onEmotionUpdate }) => {
 
     } catch (error) {
       console.error('Chat error:', error);
-      setError('Sorry, I\'m having trouble processing your message. Please try again.');
+      alert('Sorry, I\'m having trouble processing your message. Please try again.');
       setIsLoading(false);
       setIsTyping(false);
     }
@@ -124,218 +111,138 @@ const ChatInterface = ({ sessionId, onEmotionUpdate }) => {
     }
   };
 
-  const getConcernLevelColor = (level) => {
-    switch (level) {
-      case 'crisis': return 'error';
-      case 'high': return 'warning';
-      case 'medium': return 'info';
-      case 'low': return 'success';
-      default: return 'default';
-    }
-  };
-
-  const getToneIcon = (tone) => {
-    switch (tone) {
-      case 'urgent':
-      case 'crisis':
-        return <WarningIcon sx={{ fontSize: 16, color: 'error.main' }} />;
-      default:
-        return <PsychologyIcon sx={{ fontSize: 16, color: 'primary.main' }} />;
-    }
-  };
-
   return (
-    <Box sx={{ 
-      height: '100%', 
-      display: 'flex', 
-      flexDirection: 'column',
-      position: 'relative'
-    }}>
+    <Box h="100%" display="flex" flexDirection="column">
       {/* Chat Messages */}
-      <Box sx={{ 
-        flex: 1, 
-        overflow: 'auto', 
-        p: 2,
-        className: 'chat-container'
-      }}>
-        {messages.map((message, index) => (
-          <Fade in={true} key={message.id} timeout={300}>
-            <Box sx={{ 
-              mb: 2,
-              display: 'flex',
-              flexDirection: message.type === 'user' ? 'row-reverse' : 'row',
-              alignItems: 'flex-start',
-              gap: 1
-            }}>
-              {/* Avatar */}
-              <Avatar sx={{ 
-                bgcolor: message.type === 'user' ? 'primary.main' : 'secondary.main',
-                width: 36,
-                height: 36
-              }}>
-                {message.type === 'user' ? <PersonIcon /> : getToneIcon(message.tone)}
+      <Box 
+        flex={1} 
+        overflowY="auto" 
+        p={4}
+        css={{
+          '&::-webkit-scrollbar': {
+            width: '6px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: '#f1f1f1',
+            borderRadius: '3px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#c1c1c1',
+            borderRadius: '3px',
+          },
+        }}
+      >
+        <VStack spacing={4} align="stretch">
+          {messages.map((message) => (
+            <HStack 
+              key={message.id}
+              align="flex-start"
+              justify={message.type === 'user' ? 'flex-end' : 'flex-start'}
+              spacing={3}
+            >
+              {message.type === 'bot' && (
+                <Avatar 
+                  size="sm" 
+                  bg="#8FBC8F" 
+                >
+                  💝
+                </Avatar>
+              )}
+
+              <Card 
+                maxW="70%" 
+                bg={message.type === 'user' ? '#4A90A4' : 'white'}
+                color={message.type === 'user' ? 'white' : 'gray.800'}
+                boxShadow="md"
+                borderRadius={message.type === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px'}
+              >
+                <CardBody p={4}>
+                  <Text mb={2} lineHeight="1.6">
+                    {message.text}
+                  </Text>
+
+                  <Text 
+                    fontSize="xs" 
+                    color={message.type === 'user' ? 'whiteAlpha.700' : 'gray.500'}
+                    mt={2}
+                  >
+                    {new Date(message.timestamp).toLocaleTimeString()}
+                  </Text>
+                </CardBody>
+              </Card>
+
+              {message.type === 'user' && (
+                <Avatar 
+                  size="sm" 
+                  bg="#4A90A4" 
+                >
+                  👤
+                </Avatar>
+              )}
+            </HStack>
+          ))}
+
+          {/* Typing Indicator */}
+          {isTyping && (
+            <HStack align="flex-start" spacing={3}>
+              <Avatar 
+                size="sm" 
+                bg="#8FBC8F" 
+              >
+                💝
               </Avatar>
+              <Card bg="white" boxShadow="md" borderRadius="18px 18px 18px 4px">
+                <CardBody p={4}>
+                  <Text fontSize="sm" color="gray.600">
+                    MindEase is typing...
+                  </Text>
+                </CardBody>
+              </Card>
+            </HStack>
+          )}
 
-              {/* Message Content */}
-              <Paper sx={{ 
-                p: 2,
-                maxWidth: '70%',
-                bgcolor: message.type === 'user' ? 'primary.light' : 'background.paper',
-                color: message.type === 'user' ? 'white' : 'text.primary',
-                borderRadius: message.type === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px'
-              }}>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  {message.text}
-                </Typography>
-
-                {/* Crisis Warning */}
-                {message.crisisWarning && (
-                  <Alert severity="error" sx={{ mt: 2, fontSize: '0.85rem' }}>
-                    <Typography variant="body2" fontWeight="bold">
-                      {message.crisisWarning.message}
-                    </Typography>
-                  </Alert>
-                )}
-
-                {/* Emotion Insights */}
-                {message.emotionInsights && (
-                  <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                    {message.emotionInsights.concernLevel !== 'none' && (
-                      <Chip
-                        size="small"
-                        label={`${message.emotionInsights.concernLevel} concern`}
-                        color={getConcernLevelColor(message.emotionInsights.concernLevel)}
-                        variant="outlined"
-                      />
-                    )}
-                    {message.emotionInsights.sentiment !== 'neutral' && (
-                      <Chip
-                        size="small"
-                        label={`${message.emotionInsights.sentiment} sentiment`}
-                        variant="outlined"
-                      />
-                    )}
-                    {message.emotionInsights.detectedConcerns?.map(concern => (
-                      <Chip
-                        key={concern.type}
-                        size="small"
-                        label={`${concern.type}: ${concern.level}`}
-                        variant="outlined"
-                        color="info"
-                      />
-                    ))}
-                  </Box>
-                )}
-
-                <Typography variant="caption" sx={{ 
-                  display: 'block', 
-                  mt: 1, 
-                  opacity: 0.7,
-                  fontSize: '0.75rem'
-                }}>
-                  {new Date(message.timestamp).toLocaleTimeString()}
-                </Typography>
-              </Paper>
-            </Box>
-          </Fade>
-        ))}
-
-        {/* Typing Indicator */}
-        {isTyping && (
-          <Box sx={{ 
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 1,
-            mb: 2
-          }}>
-            <Avatar sx={{ 
-              bgcolor: 'secondary.main',
-              width: 36,
-              height: 36
-            }}>
-              <PsychologyIcon />
-            </Avatar>
-            <Paper sx={{ 
-              p: 2,
-              bgcolor: 'background.paper',
-              borderRadius: '18px 18px 18px 4px'
-            }}>
-              <Box className="typing-indicator">
-                <Typography variant="body2" sx={{ mr: 1, color: 'text.secondary' }}>
-                  MindEase is typing
-                </Typography>
-                <Box className="typing-dots">
-                  <Box className="typing-dot" />
-                  <Box className="typing-dot" />
-                  <Box className="typing-dot" />
-                </Box>
-              </Box>
-            </Paper>
-          </Box>
-        )}
-
-        <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} />
+        </VStack>
       </Box>
 
-      {/* Error Display */}
-      {error && (
-        <Alert severity="error" sx={{ m: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
-
       {/* Input Area */}
-      <Box sx={{ 
-        p: 2, 
-        borderTop: 1, 
-        borderColor: 'divider',
-        bgcolor: 'background.paper'
-      }}>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
-          <TextField
-            ref={inputRef}
-            fullWidth
-            multiline
-            maxRows={4}
+      <Box 
+        p={4} 
+        borderTop="1px solid" 
+        borderColor="gray.100"
+        bg="white"
+      >
+        <HStack spacing={3}>
+          <Input
             value={currentMessage}
             onChange={(e) => setCurrentMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Share what's on your mind..."
-            variant="outlined"
-            disabled={isLoading}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '25px',
-                bgcolor: 'background.default'
-              }
-            }}
+            variant="filled"
+            isDisabled={isLoading}
+            bg="gray.50"
+            _hover={{ bg: 'gray.100' }}
+            _focus={{ bg: 'white' }}
           />
-          <IconButton
+          <Button
             onClick={handleSendMessage}
-            disabled={!currentMessage.trim() || isLoading}
-            sx={{ 
-              bgcolor: 'primary.main',
-              color: 'white',
-              '&:hover': {
-                bgcolor: 'primary.dark'
-              },
-              '&:disabled': {
-                bgcolor: 'action.disabledBackground'
-              }
-            }}
+            isLoading={isLoading}
+            isDisabled={!currentMessage.trim() || isLoading}
+            colorScheme="blue"
+            borderRadius="full"
           >
-            {isLoading ? <CircularProgress size={20} /> : <SendIcon />}
-          </IconButton>
-        </Box>
+            📩 Send
+          </Button>
+        </HStack>
 
-        <Typography variant="caption" sx={{ 
-          display: 'block', 
-          mt: 1, 
-          color: 'text.secondary',
-          textAlign: 'center'
-        }}>
+        <Text 
+          fontSize="xs" 
+          color="gray.500"
+          textAlign="center"
+          mt={2}
+        >
           Remember: This is not a replacement for professional mental health care.
-        </Typography>
+        </Text>
       </Box>
     </Box>
   );

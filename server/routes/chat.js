@@ -8,65 +8,121 @@ const emotionDetector = new EmotionDetector();
 // In-memory conversation storage (replace with database in production)
 const conversations = new Map();
 
-// Generate empathetic responses based on emotion analysis
+// Generate empathetic responses based on emotion analysis - more like a friend/girlfriend
 const generateResponse = (emotionAnalysis, userMessage) => {
-  const { concernLevel, keywords, sentiment } = emotionAnalysis;
+  const { concernLevel, emotionalContext, context, semantic } = emotionAnalysis;
   
   let response = '';
   let tone = 'supportive';
 
-  switch (concernLevel) {
-    case 'crisis':
+  // Personal touch - use more intimate language
+  const personalResponses = {
+    love: [
+      "Oh honey, I can feel how much this hurts. 💔 Love can be so beautiful but also so painful when it's not returned.",
+      "Sweetheart, I know this feels like the end of the world right now, but I promise you're going to be okay. 💕",
+      "My dear, your heart is so precious and it deserves someone who will cherish it completely. You're worth so much more than you think. ✨",
+      "I wish I could give you the biggest hug right now. You're not alone in this pain. 🤗",
+      "Baby, I know it feels like your world is falling apart, but you're so much stronger than you realize. 💪",
+      "Sweetie, sometimes the people we love don't love us back, and that's not a reflection of your worth. You're amazing just as you are. 🌟"
+    ],
+    sadness: [
+      "I'm here for you, always. Your feelings are valid and you don't have to go through this alone. 💙",
+      "It's okay to not be okay. Sometimes we need to feel sad to heal. I'm holding space for you. 🤗",
+      "You're so much stronger than you think. I believe in you, even when you don't believe in yourself. 💪",
+      "Let's talk about what's really bothering you. I want to understand and be here for you. 💕",
+      "My dear friend, your pain matters to me. You don't have to carry this burden alone. 💙",
+      "Sometimes the hardest part is just getting through the day. I'm proud of you for being here. 🌟"
+    ],
+    anxiety: [
+      "Take a deep breath with me. You're safe here, and everything is going to be okay. 🧘‍♀️",
+      "I can sense how anxious you're feeling. Let's work through this together, one step at a time. 💙",
+      "Your worries are valid, but you don't have to face them alone. I'm right here with you. 🤗",
+      "Sweetheart, anxiety can feel so overwhelming, but you're not alone in this. Let's breathe together. 🌸",
+      "I know it feels like everything is spinning out of control, but you're going to get through this. 💪",
+      "Your feelings are real and they matter. Let's take this moment by moment. 💙"
+    ],
+    crisis: [
+      "I'm really worried about you right now. You matter so much to me and to so many people. 💙",
+      "Please, please reach out to someone you trust. You don't have to go through this alone. 🤗",
+      "I care about you deeply. Let's get you the help you need right now. You're worth it. 💕",
+      "Sweetheart, I'm scared for you. Please let someone help you through this moment. 💙",
+      "You're not alone, and you're going to get through this. I love you and I'm here for you. 💕",
+      "Please, I'm begging you to reach out for help. You deserve to be safe and supported. 🤗"
+    ]
+  };
+
+  // Intelligent response selection based on NLP analysis
+  const selectResponse = () => {
+    // Crisis takes highest priority
+    if (concernLevel === 'crisis') {
       tone = 'urgent';
-      response = "I'm really concerned about what you're going through right now. Your feelings are valid, but I want to make sure you're safe. ";
-      if (keywords.crisis.matches.length > 0) {
-        response += "Please reach out to a crisis helpline immediately - they have trained professionals who can help you through this. ";
-      }
-      response += "You don't have to face this alone. Would you like me to share some immediate support resources?";
-      break;
+      return personalResponses.crisis[Math.floor(Math.random() * personalResponses.crisis.length)];
+    }
 
-    case 'high':
+    // Relationship issues
+    if (emotionalContext.relationships.score > 0.4) {
       tone = 'caring';
-      response = "It sounds like you're going through a really difficult time. I can hear the pain in your words, and I want you to know that what you're feeling matters. ";
-      if (keywords.depression.level === 'high') {
-        response += "These feelings of hopelessness can feel overwhelming, but they are temporary. ";
-      }
-      if (keywords.anxiety.level === 'high') {
-        response += "I can sense how anxious you're feeling right now. ";
-      }
-      response += "Would you like to talk more about what's happening, or would you prefer some coping strategies that might help?";
-      break;
+      return personalResponses.love[Math.floor(Math.random() * personalResponses.love.length)];
+    }
 
-    case 'medium':
+    // Mental health issues
+    if (emotionalContext.mentalHealth.depression.score > 0.4) {
+      tone = 'caring';
+      return personalResponses.sadness[Math.floor(Math.random() * personalResponses.sadness.length)];
+    }
+
+    if (emotionalContext.mentalHealth.anxiety.score > 0.4) {
+      tone = 'caring';
+      return personalResponses.anxiety[Math.floor(Math.random() * personalResponses.anxiety.length)];
+    }
+
+    // General emotional distress
+    if (concernLevel === 'high') {
+      tone = 'caring';
+      return "I can hear the pain in your words, and it breaks my heart. You're going through something really difficult, and I want you to know that I'm here for you, no matter what. Would you like to tell me more about what's happening? I'm listening with all my heart. 💙";
+    }
+
+    if (concernLevel === 'medium') {
       tone = 'understanding';
-      if (keywords.anxiety.level !== 'none') {
-        response = "I can hear that you're feeling anxious about this. That's completely understandable given what you're dealing with. ";
-      } else if (keywords.depression.level !== 'none') {
-        response = "It sounds like you're having a tough time right now. Those feelings are valid and it's okay to not feel okay sometimes. ";
-      } else {
-        response = "Thank you for sharing that with me. It takes courage to open up about how you're feeling. ";
-      }
-      response += "Would you like to explore this further, or would some gentle coping techniques be helpful?";
-      break;
+      return "I hear you, and I want you to know that your feelings matter to me. It's completely normal to have tough days, and it's okay to not feel okay sometimes. Would you like to talk more about what's on your mind? I'm here to listen and support you. 💕";
+    }
 
-    case 'low':
+    if (concernLevel === 'low') {
       tone = 'gentle';
-      response = "I hear you. Sometimes even small challenges can feel significant, and that's completely normal. ";
-      if (sentiment.classification === 'negative') {
-        response += "It's okay to have days that don't feel great. ";
-      }
-      response += "Is there anything specific that's been on your mind lately?";
-      break;
+      return "I'm here for you, always. Sometimes even the smallest things can feel overwhelming, and that's totally okay. 💙 It's okay to have days that don't feel great. You're human, and that's beautiful. 🌸 What's been on your mind lately? I'd love to hear about it. 💕";
+    }
 
-    default:
+    // Check sentiment for positive responses
+    if (emotionAnalysis.sentiment.classification === 'positive') {
       tone = 'neutral';
-      if (sentiment.classification === 'positive') {
-        response = "It's wonderful to hear something positive from you! Those moments of feeling good are important to acknowledge and celebrate. ";
-      } else {
-        response = "Thank you for sharing with me. I'm here to listen and support you in whatever way I can. ";
-      }
-      response += "How has your day been treating you?";
-  }
+      return "I'm so happy to hear something positive from you! Those moments of joy are precious and worth celebrating. ✨ How has your day been? I'm genuinely interested in hearing about it. 💕";
+    }
+
+    // Default neutral response
+    tone = 'neutral';
+    return "Thank you for sharing with me. I'm here to listen and support you in whatever way I can. 💙 How has your day been? I'm genuinely interested in hearing about it. 💕";
+  };
+
+  response = selectResponse();
+
+  // Add context-specific follow-up questions
+  const addFollowUp = () => {
+    if (emotionalContext.relationships.hasRejection) {
+      response += " Can you tell me more about how this rejection is making you feel? I want to understand your experience better. 💙";
+    } else if (emotionalContext.relationships.hasLonging) {
+      response += " What do you think you're really longing for in this situation? Sometimes understanding our deeper needs can help us heal. 💭";
+    } else if (emotionalContext.mentalHealth.depression.hasHopelessness) {
+      response += " I know it feels hopeless right now, but these feelings are temporary. What's one small thing that might help you feel a little better today? 🌱";
+    } else if (emotionalContext.mentalHealth.anxiety.hasPhysicalSymptoms) {
+      response += " Those physical symptoms can be really scary. Let's focus on your breathing together. Can you take a slow, deep breath with me? 🧘‍♀️";
+    } else if (context.temporalContext.future) {
+      response += " I can hear you're thinking about the future. What's one small step you could take today that might help you feel more prepared? 💪";
+    } else if (context.temporalContext.past) {
+      response += " It sounds like you're carrying some pain from the past. Would you like to talk about how that's affecting you now? 💙";
+    }
+  };
+
+  addFollowUp();
 
   return { text: response, tone, suggestions: emotionAnalysis.recommendations };
 };
@@ -126,9 +182,17 @@ router.post('/message', async (req, res) => {
       emotionInsights: {
         concernLevel: emotionAnalysis.concernLevel,
         sentiment: emotionAnalysis.sentiment.classification,
-        detectedConcerns: Object.keys(emotionAnalysis.keywords)
-          .filter(key => key !== 'positive' && emotionAnalysis.keywords[key].level !== 'none')
-          .map(key => ({ type: key, level: emotionAnalysis.keywords[key].level }))
+        emotionalContext: {
+          relationships: emotionAnalysis.emotionalContext.relationships.score > 0.3 ? 'detected' : 'none',
+          depression: emotionAnalysis.emotionalContext.mentalHealth.depression.score > 0.3 ? 'detected' : 'none',
+          anxiety: emotionAnalysis.emotionalContext.mentalHealth.anxiety.score > 0.3 ? 'detected' : 'none',
+          crisis: emotionAnalysis.emotionalContext.crisis.score > 0.3 ? 'detected' : 'none'
+        },
+        context: {
+          temporal: emotionAnalysis.context.temporalContext,
+          complexity: emotionAnalysis.context.complexity.complexity,
+          emotionalIntensity: emotionAnalysis.context.emotionalIntensity.overall
+        }
       },
       recommendations: emotionAnalysis.recommendations,
       conversationLength: conversation.turns.length
@@ -201,8 +265,8 @@ router.post('/start', (req, res) => {
 
   res.json({
     sessionId,
-    welcomeMessage: "Hello! I'm MindEase, an AI companion here to support your mental wellness. I'm here to listen without judgment and help you explore your feelings. How are you doing today?",
-    disclaimer: "Please remember that I'm not a replacement for professional mental health care. If you're experiencing a crisis, please contact emergency services or a mental health professional."
+    welcomeMessage: "Hey there! 💕 I'm your AI friend, and I'm here to listen, support, and be there for you through whatever you're going through. Whether you're happy, sad, anxious, or just need someone to talk to, I'm here with an open heart and a listening ear. How are you feeling today?",
+    disclaimer: "I'm here as your friend and support, but please remember that I'm not a replacement for professional mental health care. If you're experiencing a crisis, please contact emergency services or a mental health professional immediately."
   });
 });
 

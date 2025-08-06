@@ -1,419 +1,173 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  Paper,
-  Typography,
   Box,
+  VStack,
+  HStack,
+  Text,
   Button,
-  Collapse,
-  IconButton,
-  Tabs,
-  Tab,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Chip,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
-} from '@mui/material';
-import {
-  Close as CloseIcon,
-  SelfImprovement as SelfImprovementIcon,
-  Psychology as PsychologyIcon,
-  Phone as PhoneIcon,
-  Schedule as ScheduleIcon,
-  Favorite as FavoriteIcon,
-  Info as InfoIcon
-} from '@mui/icons-material';
+  Card,
+  CardHeader,
+  CardBody,
+  Heading,
+
+
+} from '@chakra-ui/react';
+
 
 const ResourcePanel = ({ show, recommendations, onClose }) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [selectedExercise, setSelectedExercise] = useState(null);
-  const [exerciseDialogOpen, setExerciseDialogOpen] = useState(false);
-
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
-
-  const handleExerciseClick = (exercise) => {
-    setSelectedExercise(exercise);
-    setExerciseDialogOpen(true);
-  };
-
-  const crisisResources = [
-    {
-      name: "National Suicide Prevention Lifeline",
-      contact: "988",
-      description: "24/7 crisis support",
-      country: "US"
-    },
-    {
-      name: "Crisis Text Line", 
-      contact: "Text HOME to 741741",
-      description: "24/7 crisis support via text",
-      country: "US"
-    },
-    {
-      name: "Samaritans",
-      contact: "116 123", 
-      description: "24/7 emotional support",
-      country: "UK"
-    }
-  ];
-
-  const breathingExercises = [
-    {
-      name: "4-7-8 Breathing",
-      description: "Inhale for 4, hold for 7, exhale for 8 counts",
-      duration: "2-3 minutes",
-      instructions: [
-        "Sit comfortably with your back straight",
-        "Place your tongue against the roof of your mouth",
-        "Exhale completely through your mouth",
-        "Close your mouth and inhale through your nose for 4 counts",
-        "Hold your breath for 7 counts",
-        "Exhale through your mouth for 8 counts",
-        "Repeat 3-4 times"
-      ]
-    },
-    {
-      name: "Box Breathing",
-      description: "4-4-4-4 breathing pattern for anxiety relief",
-      duration: "3-5 minutes",
-      instructions: [
-        "Inhale for 4 counts",
-        "Hold for 4 counts", 
-        "Exhale for 4 counts",
-        "Hold empty for 4 counts",
-        "Repeat 5-10 times"
-      ]
-    }
-  ];
-
-  const mindfulnessExercises = [
-    {
-      name: "5-4-3-2-1 Grounding",
-      description: "Use your senses to ground yourself",
-      duration: "5-10 minutes",
-      instructions: [
-        "5 things you can see",
-        "4 things you can touch",
-        "3 things you can hear", 
-        "2 things you can smell",
-        "1 thing you can taste"
-      ]
-    },
-    {
-      name: "Body Scan",
-      description: "Mindful awareness of physical sensations",
-      duration: "10-20 minutes",
-      instructions: [
-        "Lie down comfortably",
-        "Start at the top of your head",
-        "Slowly move attention down your body",
-        "Notice sensations without judgment",
-        "Include each part of your body"
-      ]
-    }
-  ];
-
   if (!show) return null;
 
   return (
-    <>
-      <Paper sx={{ 
-        height: 'fit-content',
-        maxHeight: '100%',
-        overflow: 'auto',
-        position: 'relative'
-      }}>
-        {/* Header */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          p: 2,
-          borderBottom: 1,
-          borderColor: 'divider'
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FavoriteIcon color="secondary" />
-            <Typography variant="h6" fontWeight="bold">
-              Resources
-            </Typography>
-          </Box>
-          <IconButton size="small" onClick={onClose}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-
-        {/* Crisis Alert */}
-        {recommendations?.immediateActions && recommendations.immediateActions.length > 0 && (
-          <Alert severity="error" sx={{ m: 2 }}>
-            <Typography variant="body2" fontWeight="bold">
-              Immediate Support Needed
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              Please consider contacting crisis support services.
-            </Typography>
-          </Alert>
-        )}
-
-        {/* Tabs */}
-        <Tabs
-          value={activeTab}
-          onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
-          sx={{ px: 2 }}
-        >
-          <Tab 
-            icon={<PhoneIcon />} 
-            label="Crisis Help" 
-            iconPosition="start"
-            sx={{ minHeight: 48 }}
-          />
-          <Tab 
-            icon={<SelfImprovementIcon />} 
-            label="Breathing" 
-            iconPosition="start"
-            sx={{ minHeight: 48 }}
-          />
-          <Tab 
-            icon={<PsychologyIcon />} 
-            label="Mindfulness" 
-            iconPosition="start"
-            sx={{ minHeight: 48 }}
-          />
-        </Tabs>
-
-        {/* Tab Content */}
-        <Box sx={{ p: 2 }}>
-          {/* Crisis Help Tab */}
-          {activeTab === 0 && (
-            <Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                If you're in crisis or having thoughts of self-harm, please reach out immediately:
-              </Typography>
-              <List>
-                {crisisResources.map((resource, index) => (
-                  <ListItem 
-                    key={index}
-                    sx={{ 
-                      bgcolor: 'error.light',
-                      borderRadius: 2,
-                      mb: 1,
-                      '&:hover': {
-                        bgcolor: 'error.main',
-                        color: 'white'
-                      }
-                    }}
-                  >
-                    <ListItemIcon>
-                      <PhoneIcon color="error" />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={resource.name}
-                      secondary={
-                        <Box>
-                          <Typography variant="body2" component="span" fontWeight="bold">
-                            {resource.contact}
-                          </Typography>
-                          <br />
-                          <Typography variant="caption">
-                            {resource.description} ({resource.country})
-                          </Typography>
-                        </Box>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
-              
-              <Alert severity="warning" sx={{ mt: 2 }}>
-                <Typography variant="body2">
-                  <strong>Emergency:</strong> Call 911 (US), 999 (UK), or your local emergency number
-                </Typography>
-              </Alert>
-            </Box>
-          )}
-
-          {/* Breathing Exercises Tab */}
-          {activeTab === 1 && (
-            <Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Breathing exercises can help reduce anxiety and promote calm:
-              </Typography>
-              <List>
-                {breathingExercises.map((exercise, index) => (
-                  <ListItem 
-                    key={index}
-                    button
-                    onClick={() => handleExerciseClick(exercise)}
-                    sx={{ 
-                      bgcolor: 'info.light',
-                      borderRadius: 2,
-                      mb: 1,
-                      '&:hover': {
-                        bgcolor: 'info.main',
-                        color: 'white'
-                      }
-                    }}
-                  >
-                    <ListItemIcon>
-                      <SelfImprovementIcon color="info" />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={exercise.name}
-                      secondary={
-                        <Box>
-                          <Typography variant="body2">
-                            {exercise.description}
-                          </Typography>
-                          <Chip 
-                            size="small" 
-                            label={exercise.duration}
-                            icon={<ScheduleIcon />}
-                            sx={{ mt: 1 }}
-                          />
-                        </Box>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          )}
-
-          {/* Mindfulness Tab */}
-          {activeTab === 2 && (
-            <Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Mindfulness exercises to help ground yourself in the present:
-              </Typography>
-              <List>
-                {mindfulnessExercises.map((exercise, index) => (
-                  <ListItem 
-                    key={index}
-                    button
-                    onClick={() => handleExerciseClick(exercise)}
-                    sx={{ 
-                      bgcolor: 'secondary.light',
-                      borderRadius: 2,
-                      mb: 1,
-                      '&:hover': {
-                        bgcolor: 'secondary.main',
-                        color: 'white'
-                      }
-                    }}
-                  >
-                    <ListItemIcon>
-                      <PsychologyIcon color="secondary" />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={exercise.name}
-                      secondary={
-                        <Box>
-                          <Typography variant="body2">
-                            {exercise.description}
-                          </Typography>
-                          <Chip 
-                            size="small" 
-                            label={exercise.duration}
-                            icon={<ScheduleIcon />}
-                            sx={{ mt: 1 }}
-                          />
-                        </Box>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          )}
-        </Box>
-
-        {/* Footer */}
-        <Box sx={{ 
-          p: 2, 
-          borderTop: 1, 
-          borderColor: 'divider',
-          bgcolor: 'background.default'
-        }}>
-          <Typography variant="caption" color="text.secondary" sx={{ 
-            display: 'block',
-            textAlign: 'center',
-            fontStyle: 'italic'
-          }}>
-            These resources complement but don't replace professional care
-          </Typography>
-        </Box>
-      </Paper>
-
-      {/* Exercise Detail Dialog */}
-      <Dialog 
-        open={exerciseDialogOpen} 
-        onClose={() => setExerciseDialogOpen(false)}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{
-          sx: { borderRadius: 3 }
-        }}
+    <Box>
+      <Card 
+        bg="white" 
+        boxShadow="xl" 
+        borderRadius="xl" 
+        border="1px solid" 
+        borderColor="gray.100"
+        position="relative"
       >
-        {selectedExercise && (
-          <>
-            <DialogTitle sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 1,
-              pb: 1
-            }}>
-              <SelfImprovementIcon color="primary" />
+        <CardHeader pb={2}>
+          <HStack justify="space-between">
+            <HStack spacing={3}>
+              <Text fontSize="lg">💝</Text>
+              <Heading size="sm" color="gray.700">
+                Support Resources
+              </Heading>
+            </HStack>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={onClose}
+              borderRadius="full"
+              aria-label="Close resources panel"
+            >
+              ✕
+            </Button>
+          </HStack>
+        </CardHeader>
+
+        <CardBody pt={0}>
+          <VStack spacing={4} align="stretch">
+            {/* Crisis Resources */}
+            {recommendations?.resources && recommendations.resources.length > 0 && (
               <Box>
-                <Typography variant="h6">{selectedExercise.name}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {selectedExercise.description}
-                </Typography>
+                <Box bg="red.50" p={3} borderRadius="lg" mb={3} border="1px solid" borderColor="red.200">
+                  <HStack spacing={2} mb={1}>
+                    <Text fontSize="md">🚨</Text>
+                    <Heading size="sm" color="red.700">Crisis Support Available</Heading>
+                  </HStack>
+                  <Text fontSize="xs" color="red.600">
+                    Immediate help is available 24/7
+                  </Text>
+                </Box>
+                
+                <VStack spacing={2} align="stretch">
+                  {recommendations.resources.map((resource, index) => (
+                    <Text key={index} fontSize="sm" fontWeight="semibold" color="red.600">
+                      📞 {resource}
+                    </Text>
+                  ))}
+                </VStack>
               </Box>
-            </DialogTitle>
-            
-            <DialogContent>
-              <Alert severity="info" sx={{ mb: 2 }}>
-                <Typography variant="body2">
-                  <strong>Duration:</strong> {selectedExercise.duration}
-                </Typography>
-              </Alert>
-              
-              <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
-                Instructions:
-              </Typography>
-              <List dense>
-                {selectedExercise.instructions.map((instruction, index) => (
-                  <ListItem key={index}>
-                    <ListItemIcon>
-                      <InfoIcon sx={{ fontSize: 16 }} />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary={instruction}
-                      primaryTypographyProps={{ variant: 'body2' }}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </DialogContent>
-            
-            <DialogActions>
-              <Button onClick={() => setExerciseDialogOpen(false)}>
-                Close
-              </Button>
-            </DialogActions>
-          </>
-        )}
-      </Dialog>
-    </>
+            )}
+
+            {/* Immediate Actions */}
+            {recommendations?.immediateActions && recommendations.immediateActions.length > 0 && (
+              <Box>
+                <HStack spacing={2} mb={3}>
+                  <Text fontSize="md">🆘</Text>
+                  <Heading size="xs" color="gray.700">
+                    Immediate Actions
+                  </Heading>
+                </HStack>
+                
+                <VStack spacing={2} align="stretch">
+                  {recommendations.immediateActions.map((action, index) => (
+                    <Text key={index} fontSize="sm" color="gray.600">
+                      ✅ {action}
+                    </Text>
+                  ))}
+                </VStack>
+              </Box>
+            )}
+
+            {/* Coping Exercises */}
+            {recommendations?.exercises && recommendations.exercises.length > 0 && (
+              <Box>
+                <HStack spacing={2} mb={3}>
+                  <Text fontSize="md">🧘‍♀️</Text>
+                  <Heading size="xs" color="gray.700">
+                    Coping Exercises
+                  </Heading>
+                </HStack>
+                
+                <VStack spacing={2} align="stretch">
+                  {recommendations.exercises.map((exercise, index) => (
+                    <Box
+                      key={index}
+                      p={3}
+                      bg="green.50"
+                      borderRadius="lg"
+                      border="1px solid"
+                      borderColor="green.100"
+                    >
+                      <Text fontSize="sm" color="green.700" fontWeight="medium">
+                        💚 {exercise}
+                      </Text>
+                    </Box>
+                  ))}
+                </VStack>
+              </Box>
+            )}
+
+            {/* Therapeutic Approaches */}
+            {recommendations?.therapeuticApproaches && recommendations.therapeuticApproaches.length > 0 && (
+              <Box>
+                <HStack spacing={2} mb={3}>
+                  <Text fontSize="md">🎯</Text>
+                  <Heading size="xs" color="gray.700">
+                    Therapeutic Approaches
+                  </Heading>
+                </HStack>
+                
+                <VStack spacing={2} align="stretch">
+                  {recommendations.therapeuticApproaches.map((approach, index) => (
+                    <Text key={index} fontSize="sm" color="gray.600">
+                      🔹 {approach}
+                    </Text>
+                  ))}
+                </VStack>
+              </Box>
+            )}
+
+            {/* Help Message */}
+            <Box bg="blue.50" p={4} borderRadius="lg" border="1px solid" borderColor="blue.100">
+              <HStack spacing={2} mb={2}>
+                <Text fontSize="md">💙</Text>
+                <Text fontSize="sm" fontWeight="semibold" color="blue.700">
+                  Remember, You're Not Alone
+                </Text>
+              </HStack>
+              <Text fontSize="xs" color="blue.600">
+                These resources are here to support you. Take things one step at a time, 
+                and don't hesitate to reach out for professional help when needed.
+              </Text>
+            </Box>
+
+            {/* Professional Help Button */}
+            <Button
+              colorScheme="blue"
+              variant="outline"
+              size="sm"
+              borderRadius="full"
+            >
+              🏥 Find Professional Help
+            </Button>
+          </VStack>
+        </CardBody>
+      </Card>
+    </Box>
   );
 };
 

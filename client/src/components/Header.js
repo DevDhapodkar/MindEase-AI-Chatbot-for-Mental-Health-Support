@@ -1,91 +1,73 @@
 import React from 'react';
 import {
   Box,
-  Typography,
-  IconButton,
-  Tooltip,
-  Button
-} from '@mui/material';
-import {
-  Psychology as PsychologyIcon,
-  Refresh as RefreshIcon,
-  Info as InfoIcon,
-  Shield as ShieldIcon
-} from '@mui/icons-material';
+  Flex,
+  Heading,
+  Text,
+  Button,
+  HStack,
+  VStack,
+} from '@chakra-ui/react';
 
 const Header = ({ onNewSession }) => {
-  const handleInfoClick = () => {
-    window.open('/api/privacy', '_blank');
-  };
-
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'space-between',
-      mb: 2,
-      p: 2,
-      bgcolor: 'background.paper',
-      borderRadius: 2,
-      boxShadow: 1
-    }}>
-      {/* Logo and Title */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          width: 48,
-          height: 48,
-          bgcolor: 'primary.main',
-          borderRadius: '50%'
-        }}>
-          <PsychologyIcon sx={{ color: 'white', fontSize: 28 }} />
-        </Box>
-        
-        <Box>
-          <Typography variant="h4" sx={{ 
-            fontWeight: 700,
-            background: 'linear-gradient(45deg, #4A90A4 30%, #8FBC8F 90%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            mb: 0.5
-          }}>
-            MindEase
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Your AI companion for mental wellness
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Action Buttons */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Tooltip title="Privacy & Resources">
-          <IconButton onClick={handleInfoClick} sx={{ color: 'text.secondary' }}>
-            <InfoIcon />
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title="Data Protection">
-          <IconButton sx={{ color: 'text.secondary' }}>
-            <ShieldIcon />
-          </IconButton>
-        </Tooltip>
+    <Box
+      bg="white"
+      borderRadius="xl"
+      boxShadow="0 4px 20px rgba(0,0,0,0.08)"
+      border="1px solid"
+      borderColor="gray.100"
+      p={6}
+    >
+      <Flex 
+        direction={{ base: 'column', md: 'row' }}
+        align={{ base: 'flex-start', md: 'center' }}
+        justify="space-between"
+        gap={4}
+      >
+        <HStack spacing={4}>
+          <Box
+            p={3}
+            bg="#4A90A4"
+            borderRadius="xl"
+            boxShadow="0 4px 15px rgba(74, 144, 164, 0.3)"
+          >
+            <Text fontSize="2xl" color="white">💝</Text>
+          </Box>
+          
+          <VStack align="flex-start" spacing={1}>
+            <HStack>
+              <Heading 
+                size="lg" 
+                color="gray.800"
+                fontWeight="bold"
+              >
+                MindEase
+              </Heading>
+            </HStack>
+            <HStack spacing={2}>
+              <Text color="red.400">❤️</Text>
+              <Text 
+                fontSize="sm" 
+                color="gray.600"
+                fontWeight="medium"
+              >
+                Your compassionate AI companion for mental wellness
+              </Text>
+            </HStack>
+          </VStack>
+        </HStack>
 
         <Button
-          variant="outlined"
-          startIcon={<RefreshIcon />}
           onClick={onNewSession}
-          sx={{ 
-            borderRadius: 3,
-            textTransform: 'none'
-          }}
+          colorScheme="blue"
+          variant="ghost"
+          size="lg"
+          borderRadius="full"
         >
-          New Session
+          🔄 New Session
         </Button>
-      </Box>
+      </Flex>
     </Box>
   );
 };
